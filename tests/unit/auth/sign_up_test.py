@@ -77,4 +77,42 @@ class TestSignUp(BaseTest):
             user = db.session.query(User).filter_by(email='email@gmail.com').first()
             self.assertFalse(user)
             # assert user is not logged in
-            self.assertIsNone(current_user.get_id()) 
+            self.assertIsNone(current_user.get_id())
+
+    def test_sign_up_password_atleast_7_Characters(self):
+        with self.app:
+            # create sign up post
+            response = self.app.post('/sign-up',
+                                     data=dict(email='email@gmail.com', firstName='NormalName', password1='pass12',
+                                               password2='pass12'),
+                                     follow_redirects=True)
+            # assert that flash message is returned
+            self.assertIn(b'Password must be at least 7 characters', response.data)
+            # assert status code
+            self.assertEqual(response.status_code, 200)  # it does return the page, just with flash error message
+            # assert user is not created
+            user = db.session.query(User).filter_by(password='pass12').first()
+            self.assertFalse(user)
+            # assert user is not logged in
+            self.assertIsNone(current_user.get_id())
+
+
+    def route_cant_be_accessed_if_user_is_not_logged_in(self):
+        with self.app:
+            # create sign up post
+            response = self.app.post('/sign-up',
+                                     data=dict(email='email@gmail.com', firstName='NormalName', password1='pass12',
+                                               password2='pass12'),
+                                     follow_redirects=True)
+            # assert that flash message is returned
+            self.assertIn(b'Password must be at least 7 characters', response.data)
+            # assert status code
+            self.assertEqual(response.status_code, 200)  # it does return the page, just with flash error message
+            # assert user is not created
+            user = db.session.query(User).filter_by(password='pass12').first()
+            self.assertFalse(user)
+            # assert user is not logged in
+            self.assertIsNone(current_user.get_id())
+
+
+

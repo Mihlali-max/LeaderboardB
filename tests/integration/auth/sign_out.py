@@ -5,7 +5,7 @@ from flask_login import current_user
 
 class TestSignUp(BaseTest):
 
-    # test signing up user successfully 
+    # test signing up user successfully
     def test_sign_up_post_success(self):
         with self.app:
             # create a post req with valid data
@@ -17,14 +17,25 @@ class TestSignUp(BaseTest):
             self.assertTrue(user)
             # assert that flash message is shown
             self.assertIn(b'Account created', response.data)
-            # assert that user is logged in 
+            # assert that user is logged in
             self.assertEqual(current_user.get_id(), '1')
             # assert that page is redirected
             self.assertIn(b'Notes', response.data)
 
+            #Testing login successs
             resp = self.app.post('/log-in', data =dict(email='email@gmail.com', password='pass1234'),follow_redirects=True)
 
             self.assertIn(b'Logged in successfully',resp.data)
+
+            #Testing logout success redirect to login
+
+            respa = self.app.get('/log-out', follow_redirects=True)
+
+            self.assertEqual(respa.status_code, 200)
+
+
+
+
 
 
 
